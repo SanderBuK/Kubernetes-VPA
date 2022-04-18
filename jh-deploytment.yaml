@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter-vpa-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jupyter-vpa
+  template:
+    metadata:
+      labels:
+        app: jupyter-vpa
+    spec:
+      containers:
+      - name: jupyter-vpa
+        image: jupyterhub/k8s-singleuser-sample:1.2.0
+        ports:
+        - containerPort: 8888

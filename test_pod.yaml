@@ -1,0 +1,199 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    hub.jupyter.org/username: admin
+  creationTimestamp: "2022-04-08T11:59:44Z"
+  labels:
+    app: jupyterhub
+    chart: jupyterhub-1.2.0
+    component: singleuser-server
+    heritage: jupyterhub
+    hub.jupyter.org/network-access-hub: "true"
+    hub.jupyter.org/servername: ""
+    hub.jupyter.org/username: admin
+    release: release
+  name: jupyter-admin
+  namespace: default
+  resourceVersion: "26094883"
+  uid: 095e049a-840c-49ff-8c51-c81ce865f277
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: hub.jupyter.org/node-purpose
+            operator: In
+            values:
+            - user
+        weight: 100
+  automountServiceAccountToken: false
+  containers:
+  - args:
+    - jupyterhub-singleuser
+    - --ip=0.0.0.0
+    - --port=8888
+    env:
+    - name: CPU_GUARANTEE
+      value: "0.1"
+    - name: CPU_LIMIT
+      value: "0.2"
+    - name: JPY_API_TOKEN
+      value: cf3b766d008a4b07a696bd6676cfda7f
+    - name: JUPYTERHUB_ACTIVITY_URL
+      value: http://hub:8081/hub/api/users/admin/activity
+    - name: JUPYTERHUB_ADMIN_ACCESS
+      value: "1"
+    - name: JUPYTERHUB_API_TOKEN
+      value: cf3b766d008a4b07a696bd6676cfda7f
+    - name: JUPYTERHUB_API_URL
+      value: http://hub:8081/hub/api
+    - name: JUPYTERHUB_BASE_URL
+      value: /
+    - name: JUPYTERHUB_CLIENT_ID
+      value: jupyterhub-user-admin
+    - name: JUPYTERHUB_HOST
+    - name: JUPYTERHUB_OAUTH_CALLBACK_URL
+      value: /user/admin/oauth_callback
+    - name: JUPYTERHUB_SERVER_NAME
+    - name: JUPYTERHUB_SERVICE_PREFIX
+      value: /user/admin/
+    - name: JUPYTERHUB_USER
+      value: admin
+    - name: JUPYTER_IMAGE
+      value: jupyterhub/k8s-singleuser-sample:1.2.0
+    - name: JUPYTER_IMAGE_SPEC
+      value: jupyterhub/k8s-singleuser-sample:1.2.0
+    - name: MEM_GUARANTEE
+      value: "536870912"
+    - name: MEM_LIMIT
+      value: "1073741824"
+    image: jupyterhub/k8s-singleuser-sample:1.2.0
+    imagePullPolicy: IfNotPresent
+    lifecycle: {}
+    name: notebook
+    ports:
+    - containerPort: 8888
+      name: notebook-port
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 200m
+        memory: "1073741824"
+      requests:
+        cpu: 100m
+        memory: "536870912"
+    securityContext:
+      runAsUser: 1000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /home/jovyan
+      name: volume-admin
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  initContainers:
+  - command:
+    - iptables
+    - -A
+    - OUTPUT
+    - -d
+    - 169.254.169.254
+    - -j
+    - DROP
+    image: jupyterhub/k8s-network-tools:1.2.0
+    imagePullPolicy: IfNotPresent
+    name: block-cloud-metadata
+    resources: {}
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+      privileged: true
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+  nodeName: gke-maincluster-default-pool-2bf650f6-cvxp
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: OnFailure
+  schedulerName: release-user-scheduler
+  securityContext:
+    fsGroup: 100
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: hub.jupyter.org/dedicated
+    operator: Equal
+    value: user
+  - effect: NoSchedule
+    key: hub.jupyter.org_dedicated
+    operator: Equal
+    value: user
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: volume-admin
+    persistentVolumeClaim:
+      claimName: claim-admin
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-04-08T11:59:45Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-04-08T11:59:46Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-04-08T11:59:46Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-04-08T11:59:44Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://b49933e6d01fdb22d846aa060f88a2a80c3ab192e4c29d6dbf6f5738433dccaf
+    image: docker.io/jupyterhub/k8s-singleuser-sample:1.2.0
+    imageID: docker.io/jupyterhub/k8s-singleuser-sample@sha256:7fba974bb151a3bd5bcdb33e12a9be146274de44fec47ffc64345144d403400d
+    lastState: {}
+    name: notebook
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-04-08T11:59:45Z"
+  hostIP: 10.156.0.6
+  initContainerStatuses:
+  - containerID: containerd://e87a84228317baf74951f57c17323f2ee6d603bd094fab1feb7203b5eeb7e01f
+    image: docker.io/jupyterhub/k8s-network-tools:1.2.0
+    imageID: docker.io/jupyterhub/k8s-network-tools@sha256:a6fa68b84748dcf01085016fd2475e84a38d4b5f0940d010c0ae3044e50ee28d
+    lastState: {}
+    name: block-cloud-metadata
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: containerd://e87a84228317baf74951f57c17323f2ee6d603bd094fab1feb7203b5eeb7e01f
+        exitCode: 0
+        finishedAt: "2022-04-08T11:59:45Z"
+        reason: Completed
+        startedAt: "2022-04-08T11:59:45Z"
+  phase: Running
+  podIP: 10.96.0.42
+  podIPs:
+  - ip: 10.96.0.42
+  qosClass: Burstable
+  startTime: "2022-04-08T11:59:44Z"
