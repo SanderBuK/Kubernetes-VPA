@@ -16,6 +16,6 @@ Depending on what browser you prefer you have to download a webdriver from one o
 
 After following the guide and installing the webdriver while also having it in the correct folder the scripts can be run using python3 by writing 
 
-`python3 [scriptname].py YourJupyterHubUrl`
+`python3 selenium_script.py YourJupyterHubUrl [workloadtype]`
 
-The script will create a new user and open a create a notebook where it will run some python code depending on which script you ran
+The script will create a new user and open a create a notebook where it will run some python code depending on which workload you chose either bursty or ramping
