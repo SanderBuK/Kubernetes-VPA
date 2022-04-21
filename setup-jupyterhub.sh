@@ -8,4 +8,4 @@ helm upgrade --cleanup-on-fail --install release jupyterhub/jupyterhub   --names
 kubectl config set-context $(kubectl config current-context) --namespace default
 
 #external ip for accessing JupyterHub
-kubectl describe service proxy-public --namespace default
+kubectl get service --namespace default
