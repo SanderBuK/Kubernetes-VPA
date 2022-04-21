@@ -1,0 +1,7 @@
+singleuser:
+  memory:
+    limit: 1G
+    guarantee: .2G
+  cpu:
+    limit: .2
+    guarantee: .1
