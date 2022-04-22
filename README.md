@@ -19,3 +19,5 @@ After following the guide and installing the webdriver while also having it in t
 `python3 selenium_script.py YourJupyterHubUrl [workloadtype]`
 
 The script will create a new user and open a create a notebook where it will run some python code depending on which workload you chose either bursty or ramping
+
+NB: Right now it creates a notebook called "untitled" and will not start inputting the code in the kernel before the page has loaded. However if you run the script again the next notebook will be called "untitled1" which does not match what the script is searching for. Therefore you have to delete the old "untitled" notebook before running the same test again

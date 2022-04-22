@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import sys
-import shutil
 
 # Set up the driver and go to the jupyterhub page
 url = sys.argv[1]
@@ -37,8 +36,12 @@ wait.until(lambda browser: browser.current_url == f'{url}/user/{loadname}/notebo
 # Wait until the kernel is ready
 wait.until(lambda browser: browser.find_element(By.ID, 'notification_notebook').is_displayed() == False)
 
-# Enter and run the bursty code
+# Enter and run the code
 actions = ActionChains(driver)
 actions.send_keys(open(f'workloads/{loadname}.py').read())
+if loadname == 'bursty':
+    actions.send_keys(Keys.UP + Keys.HOME + (Keys.BACKSPACE*3) + Keys.UP + Keys.BACKSPACE)
+elif loadname == 'ramping':
+    actions.send_keys(Keys.UP + Keys.HOME + (Keys.BACKSPACE*4) + Keys.UP + (Keys.BACKSPACE*2) + Keys.UP + (Keys.RIGHT*4) + Keys.BACKSPACE)    
 actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
 actions.perform()
