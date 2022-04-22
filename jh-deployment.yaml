@@ -6,14 +6,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jupyter-vpa
+      app: jupyter-name
   template:
     metadata:
       labels:
-        app: jupyter-vpa
+        app: jupyter-name
     spec:
       containers:
-      - name: jupyter-vpa
+      - name: jupyter-name
         image: jupyterhub/k8s-singleuser-sample:1.2.0
         ports:
         - containerPort: 8888
