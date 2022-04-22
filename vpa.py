@@ -1,3 +1,4 @@
+import os
 import sys
 import subprocess
 import time
@@ -57,10 +58,10 @@ def kill_pod(name: str):
 
 
 def recreate_pod(name: str, resources):
-    temp_new_yaml = open("pod_scaled.yaml", "w")
+    temp_new_yaml = open("pod-scaled.yaml", "w")
     get_pod_yaml(name, temp_new_yaml)
 
-    with open("pod_scaled.yaml") as file:
+    with open("pod-scaled.yaml") as file:
         data = yaml.load(file)
 
     specs = data["spec"]["containers"][0]
@@ -71,15 +72,16 @@ def recreate_pod(name: str, resources):
         res = specs["resources"][resource]
         res["cpu"] = str(int(res["cpu"][:-1]) * 2) + "m"
 
-    with open("pod_scaled.yaml", "w") as file:
+    with open("pod-scaled.yaml", "w") as file:
         yaml.dump(data, file)
 
 
     kill_pod(name)
 
     subprocess.run(
-        ["kubectl", "apply", "-f", "pod_scaled.yaml"],
+        ["kubectl", "apply", "-f", "pod-scaled.yaml"],
     )
+    os.remove("pod-scaled.yaml")
 
 name = sys.argv[1]
 resources = get_pod_resources(name)
