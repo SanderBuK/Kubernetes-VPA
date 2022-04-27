@@ -2,9 +2,9 @@
 gcloud container clusters create \
   --machine-type n1-standard-2 \
   --num-nodes 2 \
-  --zone europe-west3-a \
+  --zone $2 \
   --cluster-version latest \
-  maincluster
+  $1
 
 #set admin privileges
 kubectl create clusterrolebinding cluster-admin-binding \

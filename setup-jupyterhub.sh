@@ -6,6 +6,3 @@ helm repo update
 helm upgrade --cleanup-on-fail --install release jupyterhub/jupyterhub   --namespace default   --create-namespace   --version=1   --values config.yaml
 
 kubectl config set-context $(kubectl config current-context) --namespace default
-
-#external ip for accessing JupyterHub
-kubectl get service --namespace default
