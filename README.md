@@ -11,6 +11,7 @@ You'll need to have installed the following programs, for this to work:
 You'll need to have installed the following Python packages, for this to work:
 - `ruamel.yaml`
 - `matplotlib`
+- `selenium`
 
 These packages can be installed by running
 ```
@@ -18,11 +19,6 @@ pip install -r requirements.txt
 ```
 
 ## Running the Selenium scripts
-Before you can run the Selenium scripts you need to have Selenium installed.
-We used pip to run the command:
-
-`pip install -U selenium`
-
 Depending on what browser you prefer you have to download a webdriver from one of the following:
 | Browser | Link |
 | --- | --- |
