@@ -1,10 +1,21 @@
 # Kubernetes-VPA
 
 ## Prerequisites
-You'll need to have installed the following programs installed, for this to work:
+### Command-line Interfaces
+You'll need to have installed the following programs, for this to work:
 - `kubectl` ([Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/))
 - `gcloud` ([Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk))
 - `helm` ([Kubernetes package manager](https://helm.sh/docs/intro/install/))
+
+### Python packages
+You'll need to have installed the following Python packages, for this to work:
+- `ruamel.yaml`
+- `matplotlib`
+
+These packages can be installed by running
+```
+pip install -r requirements.txt
+```
 
 ## Running the Selenium scripts
 Before you can run the Selenium scripts you need to have Selenium installed.
