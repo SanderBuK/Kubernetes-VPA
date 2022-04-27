@@ -1,5 +1,11 @@
 # Kubernetes-VPA
 
+## Prerequisits
+You'll need to have installed the following programs installed, for this to work:
+- `kubectl` ([Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/))
+- `gcloud` ([Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk))
+- `helm` ([Kubernetes package manager](https://helm.sh/docs/intro/install/))
+
 ## Running the Selenium scripts
 Before you can run the Selenium scripts you need to have Selenium installed.
 We used pip to run the command:
