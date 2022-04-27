@@ -1,6 +1,6 @@
 # Kubernetes-VPA
 
-## Prerequisits
+## Prerequisites
 You'll need to have installed the following programs installed, for this to work:
 - `kubectl` ([Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/))
 - `gcloud` ([Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk))
