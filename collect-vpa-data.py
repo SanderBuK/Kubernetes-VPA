@@ -51,17 +51,41 @@ def get_pod_usage(name: str):
         "memory": int(usage_obj[2].replace("\"", "")[:-2]) * 1048576
     }
 
+
+def get_vpa_recommendations(name: str):
+    usage_output = subprocess.run(
+        ["kubectl", "get", "vpa", "vpa", "--output", "yaml"],
+        stdout=subprocess.PIPE
+    ).stdout
+    data = yaml.load(usage_output.decode("utf-8"))
+
+    recommendation = data["status"]["recommendation"]["containerRecommendations"][0]
+    upperBound = recommendation["upperBound"]
+    return {
+        "upperBound": {
+            "cpu": upperBound["cpu"][:-1]
+        }
+    }
+
+
 name = sys.argv[1]
+vpa_type = sys.argv[2]
 resources = get_pod_resources(name)
 usages = []
 limits = []
 requests = []
+vpa_recommendation = []
 time_list = []
 current_time = 0
 
+get_vpa_recommendations(name)
+
 start = time.time()
 
-while (time.time() - start) < (60 * 10):
+while (time.time() - start) < 180:
+    if vpa_type == "kube":
+        recommendation = get_vpa_recommendations(name)
+        vpa_recommendation.append(recommendation["upperBound"]["cpu"])
     time_list.append(current_time)
     requests.append(resources["requests"]["cpu"])
     limits.append(resources["limits"]["cpu"])
@@ -72,6 +96,8 @@ while (time.time() - start) < (60 * 10):
 
 plt.plot(time_list, limits, label = "Limits")
 plt.plot(time_list, requests, label = "Requests")
+if vpa_type == "kube":
+    plt.plot(time_list, vpa_recommendation, label = "Recommendation")
 plt.plot(time_list, usages, label = "Usage")
 plt.xlabel("Time (s)")
 plt.ylabel("CPU (m)")
