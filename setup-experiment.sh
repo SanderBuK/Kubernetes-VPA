@@ -22,6 +22,14 @@ fi
 sleep 10
 IN=$(kubectl get service --namespace default | tail -1)
 arrIN=($IN)
+while [[ ${arrIN[3]} == "<pending>" ]]
+do 
+   IN=$(kubectl get service --namespace default | tail -1)	
+   arrIN=($IN)
+   echo ${arrIN[3]}
+   sleep 2
+done
+echo ${arrIN[3]} Url ready
 python3 ./selenium-script.py ${arrIN[3]} $workloadtype
 jupyteruser=jupyter-$workloadtype
 ./vpa.py $jupyteruser

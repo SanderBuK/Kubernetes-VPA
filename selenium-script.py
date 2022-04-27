@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import sys
 
 # Set up the driver and go to the jupyterhub page
-url = sys.argv[1]
+url = f'http://{sys.argv[1]}'
 loadname = sys.argv[2]
 driver = webdriver.Chrome()
 driver.maximize_window()
