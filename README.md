@@ -3,7 +3,7 @@
 ## Prerequisites
 
 ### Getting started
-To get your proejct started set up the project by following this guide: https://zero-to-jupyterhub.readthedocs.io/en/latest/kubernetes/google/step-zero-gcp.html
+To get your project started set up the project by following this guide: https://zero-to-jupyterhub.readthedocs.io/en/latest/kubernetes/google/step-zero-gcp.html
 
 ### Command-line Interfaces
 You'll need to have installed the following programs, for this to work:
