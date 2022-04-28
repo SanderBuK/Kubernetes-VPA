@@ -32,5 +32,5 @@ done
 echo ${arrIN[3]} Url ready
 python3 ./selenium-script.py ${arrIN[3]} $workloadtype
 jupyteruser=jupyter-$workloadtype
-./vpa.py $jupyteruser
+python3 vpa.py $jupyteruser
 
