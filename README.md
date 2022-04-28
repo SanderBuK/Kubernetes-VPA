@@ -1,6 +1,13 @@
 # Kubernetes-VPA
 
 ## Prerequisites
+
+### Setting up a Google Cloud Platform account
+If you dont have a GCP account you need to first go to https://cloud.google.com/ and create an account with the free trial.
+Then you need to create a new project.
+If you already have used the free trial you will need to set up the billing information.
+That's it you are now ready for the next step.
+
 ### Command-line Interfaces
 You'll need to have installed the following programs, for this to work:
 - `kubectl` ([Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/))
@@ -17,6 +24,8 @@ These packages can be installed by running
 ```
 pip install -r requirements.txt
 ```
+
+### Linking your terminal with GCP
 
 ## Running the Selenium scripts
 Depending on what browser you prefer you have to download a webdriver from one of the following:
