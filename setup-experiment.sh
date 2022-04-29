@@ -30,7 +30,9 @@ do
    sleep 2
 done
 echo ${arrIN[3]} Url ready
+sleep 2
 python3 ./selenium-script.py ${arrIN[3]} $workloadtype
 jupyteruser=jupyter-$workloadtype
+sleep 2
 python3 vpa.py $jupyteruser
 
