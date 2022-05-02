@@ -15,8 +15,8 @@ driver.implicitly_wait(10)
 driver.get(url)
 
 # Create a new user
-usrname = driver.find_element(By.NAME, 'username')  
-usrname.send_keys(loadname + Keys.RETURN) 
+usrname = driver.find_element(By.NAME, 'username')
+usrname.send_keys(loadname + Keys.RETURN)
 
 # Wait for the url to change to url/user/admin/tree?
 wait = WebDriverWait(driver, 100)
@@ -42,6 +42,6 @@ actions.send_keys(open(f'workloads/{loadname}.py').read())
 if loadname == 'bursty':
     actions.send_keys(Keys.UP + Keys.HOME + (Keys.BACKSPACE*3) + Keys.UP + Keys.BACKSPACE)
 elif loadname == 'ramping':
-    actions.send_keys(Keys.UP + Keys.HOME + (Keys.BACKSPACE*4) + Keys.UP + (Keys.BACKSPACE*2) + Keys.UP + (Keys.RIGHT*4) + Keys.BACKSPACE)    
+    actions.send_keys(Keys.UP + (Keys.RIGHT*4) + (Keys.BACKSPACE*4) + Keys.UP + (Keys.RIGHT*4) + (Keys.BACKSPACE*3) + Keys.UP + (Keys.RIGHT*4) + Keys.BACKSPACE)
 actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
 actions.perform()

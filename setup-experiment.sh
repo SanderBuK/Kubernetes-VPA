@@ -1,4 +1,7 @@
 #!/bin/bash
+read -p "Input VPA type (homemade/kube) [homemade]: " vpatype
+vpatype=${vpatype:-homemade}
+
 read -p "Input workload type (bursty/ramping/constant) [bursty]: " workloadtype
 workloadtype=${workloadtype:-bursty}
 
@@ -7,13 +10,13 @@ zone=${zone:-europe-west3-a}
 
 if [[ $workloadtype == "bursty" ]]
 then
-	clustername="burstycluster"
+        clustername="burstycluster"
 elif [[ $workloadtype == "ramping" ]]
 then
-	clustername="rampingcluster"
+        clustername="rampingcluster"
 elif [[ $workloadtype == "constant" ]]
 then
-	clustername="constantcluster"
+        clustername="constantcluster"
 fi
 
 
@@ -34,5 +37,13 @@ sleep 2
 python3 ./selenium-script.py ${arrIN[3]} $workloadtype
 jupyteruser=jupyter-$workloadtype
 sleep 2
-python3 vpa.py $jupyteruser
+if [[ $kubetype == "kube" ]]
+then
+    python3 ./setup-kube-vpa.py $jupyteruser & python3 collect-vpa-data.py $jupyteruser kube
+elif [[ $kubetype == "homemade" ]]
+then
+    python3 ./vpa.py $jupyteruser & python3 collect-vpa-data.py $jupyteruser homemade
+fi
+
+echo VPA now running and collecting data
 

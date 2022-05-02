@@ -4,6 +4,7 @@ import subprocess
 import time
 import ruamel.yaml
 import matplotlib.pyplot as plt
+import csv
 
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
@@ -70,7 +71,6 @@ def get_vpa_recommendations(name: str):
 
 name = sys.argv[1]
 vpa_type = sys.argv[2]
-resources = get_pod_resources(name)
 usages = []
 limits = []
 requests = []
@@ -78,21 +78,36 @@ vpa_recommendation = []
 time_list = []
 current_time = 0
 
-get_vpa_recommendations(name)
-
 start = time.time()
 
-while (time.time() - start) < 180:
-    if vpa_type == "kube":
-        recommendation = get_vpa_recommendations(name)
-        vpa_recommendation.append(recommendation["upperBound"]["cpu"])
-    time_list.append(current_time)
-    requests.append(resources["requests"]["cpu"])
-    limits.append(resources["limits"]["cpu"])
-    usage = get_pod_usage(name)
-    usages.append(usage["cpu"])
-    time.sleep(5)
-    current_time += 5
+while (time.time() - start) < 300:
+    try:
+        resources = get_pod_resources(name)
+        usage = get_pod_usage(name)
+        usages.append(usage["cpu"])
+        if vpa_type == "kube":
+            recommendation = get_vpa_recommendations(name)
+            vpa_recommendation.append(recommendation["upperBound"]["cpu"])
+        time_list.append(current_time)
+        requests.append(resources["requests"]["cpu"])
+        limits.append(resources["limits"]["cpu"])
+        time.sleep(5)
+        current_time += 5
+    except:
+        while True:
+            is_created = subprocess.run(
+                ["kubectl", "get", "pod", name],
+                stdout=subprocess.PIPE
+            ).stdout.decode("utf-8")
+            if "NotFound" not in is_created:
+                break
+            usages.append(0)
+            vpa_recommendation.append(0)
+            time_list.append(current_time)
+            requests.append(0)
+            limits.append(0)
+            time.sleep(5)
+            current_time += 5
 
 plt.plot(time_list, limits, label = "Limits")
 plt.plot(time_list, requests, label = "Requests")
@@ -103,4 +118,11 @@ plt.xlabel("Time (s)")
 plt.ylabel("CPU (m)")
 plt.title("Pod - Usage, limits and requests")
 plt.legend()
+plt.savefig(f"results/{name}{vpa_type}graph.png")
 plt.show()
+
+with open(f"results/{name}{vpa_type}graph.csv", "w") as f:
+    writer = csv.writer(f)
+    writer.writerows([
+        limits, requests, usages, time_list, vpa_recommendation
+    ])
