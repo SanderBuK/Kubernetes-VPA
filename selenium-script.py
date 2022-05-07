@@ -39,9 +39,14 @@ wait.until(lambda browser: browser.find_element(By.ID, 'notification_notebook').
 # Enter and run the code
 actions = ActionChains(driver)
 actions.send_keys(open(f'workloads/{loadname}.py').read())
+actions.send_keys(Keys.END + Keys.HOME)
 if loadname == 'bursty':
-    actions.send_keys(Keys.UP + Keys.HOME + (Keys.BACKSPACE*3) + Keys.UP + Keys.BACKSPACE)
+    actions.send_keys((Keys.BACKSPACE*5) + Keys.UP + (Keys.HOME*2) + (Keys.BACKSPACE*3) + Keys.UP + Keys.BACKSPACE)
 elif loadname == 'ramping':
-    actions.send_keys(Keys.UP + (Keys.RIGHT*4) + (Keys.BACKSPACE*4) + Keys.UP + (Keys.RIGHT*4) + (Keys.BACKSPACE*3) + Keys.UP + (Keys.RIGHT*4) + Keys.BACKSPACE)
+    actions.send_keys((Keys.BACKSPACE*4) + Keys.UP + (Keys.RIGHT*4) + (Keys.BACKSPACE*2) + Keys.UP + Keys.BACKSPACE)
+elif loadname == 'constant':
+    actions.send_keys(Keys.BACKSPACE)
+actions.key_down(Keys.CONTROL).key_down("s").key_up(Keys.CONTROL).key_up("s").perform()
+actions.perform()
 actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
 actions.perform()

@@ -1,5 +1,5 @@
 import time
-for i in range(2,12):
+for i in range(100):
     start = time.time()
     while (time.time() - start) < 60:
         print(i)

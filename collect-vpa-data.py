@@ -69,6 +69,17 @@ def get_vpa_recommendations(name: str):
     }
 
 
+def uniquify(path):
+    filename, extension = os.path.splitext(path)
+    counter = 1
+
+    while os.path.exists(path):
+        path = filename + " (" + str(counter) + ")" + extension
+        counter += 1
+
+    return path
+
+
 name = sys.argv[1]
 vpa_type = sys.argv[2]
 usages = []
@@ -80,19 +91,22 @@ current_time = 0
 
 start = time.time()
 
-while (time.time() - start) < 300:
+while True:
     try:
         resources = get_pod_resources(name)
         usage = get_pod_usage(name)
         usages.append(usage["cpu"])
         if vpa_type == "kube":
             recommendation = get_vpa_recommendations(name)
-            vpa_recommendation.append(recommendation["upperBound"]["cpu"])
+            vpa_recommendation.append(int(recommendation["upperBound"]["cpu"]))
         time_list.append(current_time)
         requests.append(resources["requests"]["cpu"])
         limits.append(resources["limits"]["cpu"])
         time.sleep(5)
         current_time += 5
+    except KeyboardInterrupt:
+        print("Stopped Data collector")
+        break
     except:
         while True:
             is_created = subprocess.run(
@@ -107,6 +121,7 @@ while (time.time() - start) < 300:
             requests.append(0)
             limits.append(0)
             time.sleep(5)
+            plt.pause(0.05)
             current_time += 5
 
 plt.plot(time_list, limits, label = "Limits")
@@ -118,11 +133,12 @@ plt.xlabel("Time (s)")
 plt.ylabel("CPU (m)")
 plt.title("Pod - Usage, limits and requests")
 plt.legend()
-plt.savefig(f"results/{name}{vpa_type}graph.png")
-plt.show()
+plt.savefig(uniquify(f"results/{name}{vpa_type}graph.png"))
 
-with open(f"results/{name}{vpa_type}graph.csv", "w") as f:
+with open(uniquify(f"results/{name}{vpa_type}graph.csv"), "w") as f:
     writer = csv.writer(f)
     writer.writerows([
         limits, requests, usages, time_list, vpa_recommendation
     ])
+
+plt.show()
