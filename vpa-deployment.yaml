@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vpa-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpa-container
+  template:
+    metadata:
+      labels:
+        app: vpa-container
+    spec:
+      containers:
+      - name: vpa-container
+        image: k8s.gcr.io/ubuntu-slim:0.1
+        ports:
+        - containerPort: 8888
+        volumeMounts:
+        - mountPath: /workloads
+          name: workloads
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 100m
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - "while true; do echo Hello; sleep 0.0005s; done;"
+      volumes:
+      - name: workloads
+        hostPath:
+          path: /home/sander/Documents/itu/6_sem/bachelor/kube_vpa/workloads/

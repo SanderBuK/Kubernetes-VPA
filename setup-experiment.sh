@@ -37,13 +37,12 @@ sleep 2
 python3 ./selenium-script.py ${arrIN[3]} $workloadtype
 jupyteruser=jupyter-$workloadtype
 sleep 2
-if [[ $kubetype == "kube" ]]
+
+echo VPA now running and collecting data. Stop it, and view graph with Ctrl+C
+if [[ $vpatype == "kube" ]]
 then
-    python3 ./setup-kube-vpa.py $jupyteruser & python3 collect-vpa-data.py $jupyteruser kube
-elif [[ $kubetype == "homemade" ]]
+    python3 ./setup-kube-vpa.py & python3 collect-vpa-data.py placeholder kube
+elif [[ $vpatype == "homemade" ]]
 then
     python3 ./vpa.py $jupyteruser & python3 collect-vpa-data.py $jupyteruser homemade
 fi
-
-echo VPA now running and collecting data
-

@@ -6,6 +6,6 @@ spec:
   targetRef:
     apiVersion: "apps/v1"
     kind:       Deployment
-    name:       jupyter-vpa-deployment
+    name:       vpa-deployment
   updatePolicy:
     updateMode: "Auto"
