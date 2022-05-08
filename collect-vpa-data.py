@@ -5,6 +5,7 @@ import time
 import ruamel.yaml
 import matplotlib.pyplot as plt
 import csv
+import numpy
 
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
@@ -26,11 +27,9 @@ def get_pod_resources(name: str):
     return {
         "limits": {
             "cpu": int(resources_obj[2].replace("m", "")),
-            "memory": int(resources_obj[4].replace("\"", ""))
         },
         "requests": {
             "cpu": int(resources_obj[7].replace("m", "")),
-            "memory": int(resources_obj[9].replace("\"", ""))
         }
     }
 
@@ -49,8 +48,23 @@ def get_pod_usage(name: str):
     usage_obj = usage.stdout.decode("utf-8").split()
     return {
         "cpu": int(usage_obj[1].replace("m", "")),
-        "memory": int(usage_obj[2].replace("\"", "")[:-2]) * 1048576
     }
+
+
+def get_kube_vpa_name():
+    name_output = subprocess.run(
+        ["kubectl", "get", "pods", "-l", "app=vpa-container"],
+        stdout=subprocess.PIPE
+    ).stdout
+
+    name_output_split = subprocess.run(
+        ["grep", "vpa-deployment"],
+        input=name_output,
+        stdout=subprocess.PIPE,
+    )
+
+    name_split = name_output_split.stdout.decode("utf-8").split()
+    return name_split[0]
 
 
 def get_vpa_recommendations(name: str):
@@ -60,16 +74,26 @@ def get_vpa_recommendations(name: str):
     ).stdout
     data = yaml.load(usage_output.decode("utf-8"))
 
-    cpu = 0
+    upper_cpu = 0
+    lower_cpu = 0
+    target_cpu = 0
     recommendation = data["status"]["recommendation"]["containerRecommendations"]
     for pod in recommendation:
-        if pod["containerName"] == name:
-            cpu = pod["upperBound"]["cpu"][:-1]
+        if pod["containerName"] == "vpa-container":
+            upper_cpu = pod["upperBound"]["cpu"][:-1]
+            lower_cpu = pod["lowerBound"]["cpu"][:-1]
+            target_cpu = pod["target"]["cpu"][:-1]
 
     return {
         "upperBound": {
-            "cpu": cpu
-        }
+            "cpu": upper_cpu
+        },
+        "lowerBound": {
+            "cpu": lower_cpu
+        },
+        "target": {
+            "cpu": target_cpu
+        },
     }
 
 
@@ -86,10 +110,14 @@ def uniquify(path):
 
 name = sys.argv[1]
 vpa_type = sys.argv[2]
+if vpa_type == "kube":
+    name = get_kube_vpa_name()
 usages = []
 limits = []
 requests = []
-vpa_recommendation = []
+vpa_upper_bound = []
+vpa_lower_bound = []
+vpa_target = []
 time_list = []
 current_time = 0
 
@@ -99,7 +127,9 @@ while True:
     try:
         if vpa_type == "kube":
             recommendation = get_vpa_recommendations(name)
-            vpa_recommendation.append(int(recommendation["upperBound"]["cpu"]))
+            vpa_upper_bound.append(int(recommendation["upperBound"]["cpu"]))
+            vpa_lower_bound.append(int(recommendation["lowerBound"]["cpu"]))
+            vpa_target.append(int(recommendation["target"]["cpu"]))
         resources = get_pod_resources(name)
         usage = get_pod_usage(name)
         usages.append(usage["cpu"])
@@ -120,7 +150,9 @@ while True:
             if "NotFound" not in is_created:
                 break
             usages.append(0)
-            vpa_recommendation.append(0)
+            vpa_upper_bound.append(0)
+            vpa_lower_bound.append(0)
+            vpa_target.append(0)
             time_list.append(current_time)
             requests.append(0)
             limits.append(0)
@@ -130,14 +162,14 @@ while True:
 with open(uniquify(f"results/{name}{vpa_type}graph.csv"), "w") as f:
     writer = csv.writer(f)
     writer.writerows([
-        limits, requests, usages, time_list, vpa_recommendation
+        limits, requests, usages, time_list, vpa_upper_bound, vpa_lower_bound, vpa_target
     ])
 
-plt.ylim(0, 2000)
 plt.plot(time_list, limits, label = "Limits")
 plt.plot(time_list, requests, label = "Requests")
 if vpa_type == "kube":
-    plt.plot(time_list, vpa_recommendation, label = "Recommendation")
+    plt.plot(time_list, vpa_lower_bound, label = "Lower Bound")
+    plt.plot(time_list, vpa_target, label = "Target")
 plt.plot(time_list, usages, label = "Usage")
 plt.xlabel("Time (s)")
 plt.ylabel("CPU (m)")
