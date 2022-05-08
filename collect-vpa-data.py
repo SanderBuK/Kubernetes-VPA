@@ -60,11 +60,15 @@ def get_vpa_recommendations(name: str):
     ).stdout
     data = yaml.load(usage_output.decode("utf-8"))
 
-    recommendation = data["status"]["recommendation"]["containerRecommendations"][0]
-    upperBound = recommendation["upperBound"]
+    cpu = 0
+    recommendation = data["status"]["recommendation"]["containerRecommendations"]
+    for pod in recommendation:
+        if pod["containerName"] == name:
+            cpu = pod["upperBound"]["cpu"][:-1]
+
     return {
         "upperBound": {
-            "cpu": upperBound["cpu"][:-1]
+            "cpu": cpu
         }
     }
 
@@ -93,12 +97,12 @@ start = time.time()
 
 while True:
     try:
-        resources = get_pod_resources(name)
-        usage = get_pod_usage(name)
-        usages.append(usage["cpu"])
         if vpa_type == "kube":
             recommendation = get_vpa_recommendations(name)
             vpa_recommendation.append(int(recommendation["upperBound"]["cpu"]))
+        resources = get_pod_resources(name)
+        usage = get_pod_usage(name)
+        usages.append(usage["cpu"])
         time_list.append(current_time)
         requests.append(resources["requests"]["cpu"])
         limits.append(resources["limits"]["cpu"])
@@ -121,9 +125,15 @@ while True:
             requests.append(0)
             limits.append(0)
             time.sleep(5)
-            plt.pause(0.05)
             current_time += 5
 
+with open(uniquify(f"results/{name}{vpa_type}graph.csv"), "w") as f:
+    writer = csv.writer(f)
+    writer.writerows([
+        limits, requests, usages, time_list, vpa_recommendation
+    ])
+
+plt.ylim(0, 2000)
 plt.plot(time_list, limits, label = "Limits")
 plt.plot(time_list, requests, label = "Requests")
 if vpa_type == "kube":
@@ -134,11 +144,5 @@ plt.ylabel("CPU (m)")
 plt.title("Pod - Usage, limits and requests")
 plt.legend()
 plt.savefig(uniquify(f"results/{name}{vpa_type}graph.png"))
-
-with open(uniquify(f"results/{name}{vpa_type}graph.csv"), "w") as f:
-    writer = csv.writer(f)
-    writer.writerows([
-        limits, requests, usages, time_list, vpa_recommendation
-    ])
 
 plt.show()
