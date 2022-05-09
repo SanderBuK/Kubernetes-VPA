@@ -6,7 +6,7 @@
 To get your project started set up the project by following this guide: https://zero-to-jupyterhub.readthedocs.io/en/latest/kubernetes/google/step-zero-gcp.html
 
 ### Command-line Interfaces
-You'll need to have installed the following programs, for this to work:
+You'll need to have installed the following programs, for the scripts to work:
 - `kubectl` ([Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/))
 - `gcloud` ([Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk))
 - `helm` ([Kubernetes package manager](https://helm.sh/docs/intro/install/))
@@ -16,6 +16,7 @@ You'll need to have installed the following Python packages, for this to work:
 - `ruamel.yaml`
 - `matplotlib`
 - `selenium`
+- `numpy`
 
 These packages can be installed by running
 ```
