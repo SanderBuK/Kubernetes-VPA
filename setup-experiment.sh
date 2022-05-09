@@ -1,12 +1,12 @@
 #!/bin/bash
+read -p "Setup Cluster and JupyterHub (Y/n): " setup
+setup=${setup:-Y}
+
 read -p "Input VPA type (homemade/kube) [homemade]: " vpatype
 vpatype=${vpatype:-homemade}
 
 read -p "Input workload type (bursty/ramping/constant) [bursty]: " workloadtype
 workloadtype=${workloadtype:-bursty}
-
-read -p "Input zone (Available zones: https://cloud.google.com/compute/docs/regions-zones/#available) [europe-west-3-a]: " zone
-zone=${zone:-europe-west3-a}
 
 if [[ $workloadtype == "bursty" ]]
 then
@@ -19,30 +19,34 @@ then
         clustername="constantcluster"
 fi
 
+if [[ $setup == "Y" ]]
+then
+    read -p "Input zone (Available zones: https://cloud.google.com/compute/docs/regions-zones/#available) [europe-west-3-a]: " zone
+    zone=${zone:-europe-west3-a}
 
-./setup-cluster.sh $clustername $zone
-./setup-jupyterhub.sh
-sleep 10
-IN=$(kubectl get service --namespace default | tail -1)
-arrIN=($IN)
-while [[ ${arrIN[3]} == "<pending>" ]]
-do 
-   IN=$(kubectl get service --namespace default | tail -1)	
-   arrIN=($IN)
-   echo ${arrIN[3]}
-   sleep 2
-done
-echo ${arrIN[3]} Url ready
-sleep 2
-python3 ./selenium-script.py ${arrIN[3]} $workloadtype
-jupyteruser=jupyter-$workloadtype
-sleep 2
+    ./setup-cluster.sh $clustername $zone
+    ./setup-jupyterhub.sh
+    sleep 10
+fi
 
-echo VPA now running and collecting data. Stop it, and view graph with Ctrl+C
 if [[ $vpatype == "kube" ]]
 then
-    python3 ./setup-kube-vpa.py & python3 collect-vpa-data.py placeholder kube
+    python3 ./setup-kube-vpa.py $workloadtype & python3 collect-vpa-data.py placeholder kube
 elif [[ $vpatype == "homemade" ]]
 then
+    IN=$(kubectl get service --namespace default | tail -1)
+    arrIN=($IN)
+    while [[ ${arrIN[3]} == "<pending>" ]]
+    do 
+    IN=$(kubectl get service --namespace default | tail -1)	
+    arrIN=($IN)
+    echo ${arrIN[3]}
+    sleep 2
+    done
+    echo ${arrIN[3]} Url ready
+    sleep 2
+    python3 ./selenium-script.py ${arrIN[3]} $workloadtype
+    jupyteruser=jupyter-$workloadtype
+    sleep 2
     python3 ./vpa.py $jupyteruser & python3 collect-vpa-data.py $jupyteruser homemade
 fi

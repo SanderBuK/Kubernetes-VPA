@@ -178,3 +178,25 @@ plt.legend()
 plt.savefig(uniquify(f"results/{name}{vpa_type}graph.png"))
 
 plt.show()
+
+# Used to re-plot data if something went wrong
+#
+# with open("results/vpa-deployment-cc9bd7fbc-lrxvfkubegraph.csv", "r") as f:
+#     reader = csv.reader(f, delimiter=',')
+#     rows = list(reader)
+#     for i in range(0, 7):
+#         rows[i] = [int(x) for x in rows[i]]
+#     plt.plot(rows[3], rows[0], label = "Limits")
+#     plt.plot(rows[3], rows[1], label = "Requests")
+#     if vpa_type == "kube":
+#         plt.plot(rows[3], rows[5], label = "Lower Bound")
+#         plt.plot(rows[3], rows[6], label = "Target")
+#     plt.plot(rows[3], rows[2], label = "Usage")
+#     plt.xlabel("Time (s)")
+#     plt.ylabel("CPU (m)")
+#     plt.title("Pod - Usage, limits and requests")
+#     plt.legend()
+#     plt.savefig("results/vpa-deployment-cc9bd7fbc-lrxvfkubegraph.png")
+# 
+#     plt.show()
+# 

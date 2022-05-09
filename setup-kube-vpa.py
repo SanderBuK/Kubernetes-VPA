@@ -1,6 +1,8 @@
 import sys
 import subprocess
 
+workload = sys.argv[1]
+
 subprocess.run(
     ["kubectl", "delete", "vpa", "vpa"],
 ).stdout
