@@ -21,6 +21,8 @@ fi
 
 if [[ $setup == "Y" ]]
 then
+    pip install -r requirements.txt
+
     read -p "Input zone (Available zones: https://cloud.google.com/compute/docs/regions-zones/#available) [europe-west-3-a]: " zone
     zone=${zone:-europe-west3-a}
 
