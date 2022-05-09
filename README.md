@@ -11,17 +11,9 @@ You'll need to have installed the following programs, for the scripts to work:
 - `gcloud` ([Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk))
 - `helm` ([Kubernetes package manager](https://helm.sh/docs/intro/install/))
 
-### Python packages
-You'll need to have installed the following Python packages, for this to work:
-- `ruamel.yaml`
-- `matplotlib`
-- `selenium`
-- `numpy`
-
-These packages can be installed by running
-```
-pip install -r requirements.txt
-```
+### Programs
+You'll need to have installed the following programs, for the scripts to work:
+- `python3` which needs a functioning `pip` installation
 
 ## Running the Selenium scripts
 Depending on what browser you prefer you have to download a webdriver from one of the following:
