@@ -46,10 +46,10 @@ then
     arrIN=($IN)
     while [[ ${arrIN[3]} == "<pending>" ]]
     do 
-    IN=$(kubectl get service --namespace default | tail -1)	
-    arrIN=($IN)
-    echo ${arrIN[3]}
-    sleep 2
+        IN=$(kubectl get service --namespace default | tail -1)
+        arrIN=($IN)
+        echo ${arrIN[3]}
+        sleep 2
     done
     echo ${arrIN[3]} Url ready
     sleep 2
