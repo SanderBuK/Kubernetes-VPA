@@ -33,6 +33,12 @@ fi
 
 if [[ $vpatype == "kube" ]]
 then
+    if [ ! -d "/autoscaler" ] 
+    then
+        git clone https://github.com/kubernetes/autoscaler.git
+    fi
+    ./autoscaler/vertical-pod-autoscaler/hack/vpa-down.sh
+    ./autoscaler/vertical-pod-autoscaler/hack/vpa-up.sh
     python3 ./setup-kube-vpa.py $workloadtype & python3 collect-vpa-data.py placeholder kube
 elif [[ $vpatype == "homemade" ]]
 then
