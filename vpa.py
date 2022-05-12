@@ -79,6 +79,7 @@ def recreate_pod(name: str):
     )
     os.remove("pod-scaled.yaml")
 
+
 def vpa(name, resources, threshold=.85, freq=15):
     no_scaling = True
     while no_scaling:
@@ -96,6 +97,7 @@ def vpa(name, resources, threshold=.85, freq=15):
             print("Usage is below threshold")
         print()
         time.sleep(freq)
+
 
 name = sys.argv[1]
 resources = get_pod_resources(name)
