@@ -1,6 +1,6 @@
 #!/bin/bash
-read -p "Setup Cluster and JupyterHub (Y/n): " setup
-setup=${setup:-Y}
+read -p "Setup Cluster and JupyterHub (y/N): " setup
+setup=${setup:-N}
 
 read -p "Input VPA type (homemade/kube) [homemade]: " vpatype
 vpatype=${vpatype:-homemade}
@@ -19,7 +19,7 @@ then
         clustername="constantcluster"
 fi
 
-if [[ $setup == "Y" ]]
+if [[ $setup == "y" ]]
 then
     pip install -r requirements.txt
 
@@ -39,6 +39,7 @@ then
     fi
     ./autoscaler/vertical-pod-autoscaler/hack/vpa-down.sh
     ./autoscaler/vertical-pod-autoscaler/hack/vpa-up.sh
+    kubectl create configmap workloads --from-file=workloads/
     python3 ./setup-kube-vpa.py $workloadtype & python3 collect-vpa-data.py placeholder kube
 elif [[ $vpatype == "homemade" ]]
 then

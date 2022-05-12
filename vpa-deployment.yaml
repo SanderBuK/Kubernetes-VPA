@@ -18,8 +18,8 @@ spec:
         ports:
         - containerPort: 8888
         volumeMounts:
-        - mountPath: /workloads
-          name: workloads
+        - name: workloads-volume
+          mountPath: /home/jovyan/workloads
         resources:
           limits:
             memory: 200Mi
@@ -27,16 +27,11 @@ spec:
           requests:
             memory: 200Mi
             cpu: 100m
-        command: ["/bin/sh"]
+        command: ["/bin/bash"]
         args:
           - "-c"
-          - |
-            for i in $(seq 100)
-            do
-                export i
-                timeout 40 /bin/bash -c -- 'while true; do echo $i; sleep_time=$(printf "0.%05ds" $((100000/(2**$i)))); sleep ${sleep_time}; done;'
-            done
+          - "bash workloads/WORKLOAD_NAME.sh"
       volumes:
-      - name: workloads
-        hostPath:
-          path: /home/sander/Documents/itu/6_sem/bachelor/kube_vpa/workloads/
+      - name: workloads-volume
+        configMap:
+          name: workloads

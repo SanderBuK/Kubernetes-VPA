@@ -8,4 +8,5 @@ spec:
     kind:       Deployment
     name:       vpa-deployment
   updatePolicy:
+    minReplicas: 1
     updateMode: "Auto"

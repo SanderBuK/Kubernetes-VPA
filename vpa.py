@@ -57,12 +57,8 @@ def kill_pod(name: str):
     )
 
 
-def recreate_pod(name: str, resources):
-    temp_new_yaml = open("pod-scaled.yaml", "w")
-    get_pod_yaml(name, temp_new_yaml)
-
-    with open("pod-scaled.yaml") as file:
-        data = yaml.load(file)
+def recreate_pod(name: str):
+    data = yaml.load(get_pod_yaml(name))
 
     specs = data["spec"]["containers"][0]
     for env in specs["env"]:
@@ -74,7 +70,7 @@ def recreate_pod(name: str, resources):
 
     with open("pod-scaled.yaml", "w") as file:
         yaml.dump(data, file)
-
+        file.close()
 
     kill_pod(name)
 
@@ -83,21 +79,24 @@ def recreate_pod(name: str, resources):
     )
     os.remove("pod-scaled.yaml")
 
+def vpa(name, resources, threshold=.85, freq=15):
+    no_scaling = True
+    while no_scaling:
+        usage = get_pod_usage(name)
+        print("Usage:\t\t" + str(usage))
+        print("Resources:\t" + str(resources))
+        if usage["cpu"] > resources["limits"]["cpu"] * threshold:
+            print("CPU usage is too high, commence scaling")
+            recreate_pod(name)
+            no_scaling = False
+        elif usage["memory"] > resources["limits"]["memory"]:
+            print("Memory usage is too high, commence scaling")
+            no_scaling = False
+        else:
+            print("Usage is below threshold")
+        print()
+        time.sleep(freq)
+
 name = sys.argv[1]
 resources = get_pod_resources(name)
-no_scaling = True
-while no_scaling:
-    usage = get_pod_usage(name)
-    print("Usage:\t\t" + str(usage))
-    print("Resources:\t" + str(resources))
-    if usage["cpu"] > resources["limits"]["cpu"] * .85:
-        print("CPU usage is too high, commence scaling")
-        recreate_pod(name, resources)
-        no_scaling = False
-    elif usage["memory"] > resources["limits"]["memory"]:
-        print("Memory usage is too high, commence scaling")
-        no_scaling = False
-    else:
-        print("Usage is below limits")
-    print()
-    time.sleep(5)
+vpa(name, resources)

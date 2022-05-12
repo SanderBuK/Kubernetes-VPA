@@ -5,7 +5,6 @@ import time
 import ruamel.yaml
 import matplotlib.pyplot as plt
 import csv
-import numpy
 
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
@@ -51,7 +50,7 @@ def get_pod_usage(name: str):
     }
 
 
-def get_kube_vpa_name():
+def get_vpa_pod_name():
     name_output = subprocess.run(
         ["kubectl", "get", "pods", "-l", "app=vpa-container"],
         stdout=subprocess.PIPE
@@ -111,7 +110,7 @@ def uniquify(path):
 name = sys.argv[1]
 vpa_type = sys.argv[2]
 if vpa_type == "kube":
-    name = get_kube_vpa_name()
+    name = get_vpa_pod_name()
 usages = []
 limits = []
 requests = []
@@ -125,13 +124,13 @@ start = time.time()
 
 while True:
     try:
+        resources = get_pod_resources(name)
+        usage = get_pod_usage(name)
         if vpa_type == "kube":
             recommendation = get_vpa_recommendations(name)
             vpa_upper_bound.append(int(recommendation["upperBound"]["cpu"]))
             vpa_lower_bound.append(int(recommendation["lowerBound"]["cpu"]))
             vpa_target.append(int(recommendation["target"]["cpu"]))
-        resources = get_pod_resources(name)
-        usage = get_pod_usage(name)
         usages.append(usage["cpu"])
         time_list.append(current_time)
         requests.append(resources["requests"]["cpu"])
@@ -147,6 +146,8 @@ while True:
                 ["kubectl", "get", "pod", name],
                 stdout=subprocess.PIPE
             ).stdout.decode("utf-8")
+            if vpa_type == "kube":
+                name =  get_vpa_pod_name()
             if "NotFound" not in is_created:
                 break
             usages.append(0)
@@ -180,23 +181,27 @@ plt.savefig(uniquify(f"results/{name}{vpa_type}graph.png"))
 plt.show()
 
 # Used to re-plot data if something went wrong
-#
-# with open("results/vpa-deployment-cc9bd7fbc-lrxvfkubegraph.csv", "r") as f:
+# 
+# with open("results/vpa-deployment-5b8fb9c68b-hpcjrkubegraph.csv", "r") as f:
+#     # reader = csv.reader(f, delimiter=',')
+#     # rows = list(reader)
+#     # for i in range(0, 7):
+#     #     print(len(rows[i]))
+#     # sys.exit()
 #     reader = csv.reader(f, delimiter=',')
 #     rows = list(reader)
 #     for i in range(0, 7):
-#         rows[i] = [int(x) for x in rows[i]]
-#     plt.plot(rows[3], rows[0], label = "Limits")
-#     plt.plot(rows[3], rows[1], label = "Requests")
+#         rows[i] = [int(x) for x in rows[i][:500]]
+#     plt.plot(rows[3], rows[0], label = "Limits", color='#1f77b4')
+#     plt.plot(rows[3], rows[1], label = "Requests", color='#ff7f0e')
+#     plt.plot(rows[3], rows[2], label = "Usage", color='#2ca02c')
 #     if vpa_type == "kube":
-#         plt.plot(rows[3], rows[5], label = "Lower Bound")
-#         plt.plot(rows[3], rows[6], label = "Target")
-#     plt.plot(rows[3], rows[2], label = "Usage")
+#         plt.plot(rows[3], rows[5], label = "Lower Bound", color='#d62728')
+#         plt.plot(rows[3], rows[6], label = "Target", color='#9467bd')
 #     plt.xlabel("Time (s)")
 #     plt.ylabel("CPU (m)")
 #     plt.title("Pod - Usage, limits and requests")
 #     plt.legend()
-#     plt.savefig("results/vpa-deployment-cc9bd7fbc-lrxvfkubegraph.png")
+#     plt.savefig("results/vpa-deployment-5b8fb9c68b-hpcjrkubegraph (1).png")
 # 
 #     plt.show()
-# 
