@@ -1,9 +1,10 @@
 # Kubernetes-VPA
 
 ## Prerequisites
-
 ### Getting started
-To get your project started set up the project by following this guide: https://zero-to-jupyterhub.readthedocs.io/en/latest/kubernetes/google/step-zero-gcp.html
+You'll need a Google Cloud account. With the account, create a new Project, with the Kubernetes Engine API enabled.
+
+Having `gcloud` ensure that it points to your account and the correct project.
 
 ### Command-line Interfaces
 You'll need to have installed the following programs, for the scripts to work:
