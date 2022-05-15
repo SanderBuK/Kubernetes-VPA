@@ -15,19 +15,12 @@ You'll need to have installed the following programs, for the scripts to work:
 You'll need to have installed the following programs, for the scripts to work:
 - `python3` which needs a functioning `pip` installation
 
-## Running the Selenium scripts
-Depending on what browser you prefer you have to download a webdriver from one of the following:
-| Browser | Link |
-| --- | --- |
-| Chrome: | https://chromedriver.chromium.org/downloads  |
-| Edge: | https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ |
-|Firefox: | https://github.com/mozilla/geckodriver/releases | 
-| Safari: | https://webkit.org/blog/6900/webdriver-support-in-safari-10/ | 
+### Running the Selenium scripts
+In order to run the Selenium script, you will need a webdriver installed. We use the Chrome webdriver, which can be found here: https://chromedriver.chromium.org/downloads
 
-After following the guide and installing the webdriver while also having it in the correct folder the scripts can be run using python3 by writing 
+NB: The Selenium script creates a notebook called "Untitled" and will not start inputting the code in the kernel before the page has loaded. However if you run the script again the next notebook will be called "Untitled1" which does not match what the script is searching for. Therefore you have to delete the old "Untitled" notebook before running the same test again
 
-`python3 selenium_script.py YourJupyterHubUrl [workloadtype]`
+## Run the experiment
+Running the experiment is done by running the `setup-experiment.sh` script. Answer the three prompts, and the experiment will begin.
 
-The script will create a new user and open a create a notebook where it will run some python code depending on which workload you chose either bursty or ramping
-
-NB: Right now it creates a notebook called "untitled" and will not start inputting the code in the kernel before the page has loaded. However if you run the script again the next notebook will be called "untitled1" which does not match what the script is searching for. Therefore you have to delete the old "untitled" notebook before running the same test again
+You can terminate the experiment anytime, by inputting `Ctrl + C`. After stopping, a graph is displayed showing the results. The graph, along with a `.csv` file, is saved under the folder `results/`.
